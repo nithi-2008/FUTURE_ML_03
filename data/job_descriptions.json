@@ -1,0 +1,62 @@
+[
+  {
+    "id": "jd-mle-001",
+    "title": "Senior Machine Learning Engineer",
+    "department": "Artificial Intelligence & Research",
+    "experience_years": 4,
+    "description": "We are seeking a talented Senior Machine Learning Engineer to design, build, and deploy production ML and Deep Learning systems. You will work on natural language processing pipelines, recommendation systems, and large language model integrations. Responsibilities include building scalable ML training pipelines, tracking experiments with MLflow or WandB, containerizing models using Docker and Kubernetes, and exposing inference services via FastAPI on AWS. The ideal candidate has deep expertise in Python, PyTorch or TensorFlow, Scikit-Learn, MLOps, CI/CD pipelines, and cloud computing.",
+    "required_skills": ["Python", "Machine Learning", "PyTorch", "Scikit-Learn", "Docker", "FastAPI", "AWS", "Git"],
+    "preferred_skills": ["Kubernetes", "MLflow", "Deep Learning", "NLP", "LLMs", "CI/CD", "PostgreSQL"],
+    "min_degree": "Bachelor's Degree in Computer Science or related STEM field"
+  },
+  {
+    "id": "jd-fsd-002",
+    "title": "Full Stack Developer (React & Node.js)",
+    "department": "Engineering & Web Platforms",
+    "experience_years": 3,
+    "description": "Looking for an energetic Full Stack Developer to engineer responsive, high-performance web applications. The role involves architecting rich user interfaces with React, TypeScript, and Next.js, combined with robust backend REST APIs and microservices using Node.js and Express.js. You will manage PostgreSQL and MongoDB databases, write comprehensive automated unit tests with Jest, integrate third-party APIs, and deploy cloud infrastructure using Docker and AWS. Agile team collaboration and strong Git workflows are essential.",
+    "required_skills": ["JavaScript", "TypeScript", "React", "Node.js", "Express.js", "PostgreSQL", "REST APIs", "Git"],
+    "preferred_skills": ["Next.js", "MongoDB", "Docker", "AWS", "GraphQL", "Tailwind CSS", "Agile"],
+    "min_degree": "Bachelor's Degree in Computer Science or equivalent practical experience"
+  },
+  {
+    "id": "jd-devops-003",
+    "title": "Cloud DevOps & Platform Engineer",
+    "department": "Infrastructure & Cloud Operations",
+    "experience_years": 3,
+    "description": "We need a skilled Cloud DevOps Engineer to maintain our mission-critical Kubernetes clusters and automate our multi-cloud deployment pipelines. You will write Infrastructure-as-Code using Terraform, configure continuous integration and continuous deployment with GitHub Actions and Jenkins, and ensure observability via Prometheus and Grafana. Deep knowledge of Linux system administration, Docker containerization, AWS cloud architecture, and Bash scripting is required. Experience with Ansible and zero-downtime releases is a huge plus.",
+    "required_skills": ["AWS", "Docker", "Kubernetes", "Linux", "Terraform", "CI/CD", "GitHub Actions", "Bash"],
+    "preferred_skills": ["Ansible", "Prometheus", "Grafana", "Python", "Nginx", "Azure", "System Design"],
+    "min_degree": "Bachelor's in Computer Science, Information Technology or related discipline"
+  },
+  {
+    "id": "jd-ds-004",
+    "title": "Data Scientist (NLP & Predictive Modeling)",
+    "department": "Analytics & Data Intelligence",
+    "experience_years": 3,
+    "description": "Join our data team as a Data Scientist focused on predictive analytics, customer segmentation, and text mining. You will analyze complex tabular and unstructured textual data using Python, Pandas, NumPy, and Scikit-Learn. You will develop NLP models using spaCy and NLTK for entity extraction and sentiment analysis. You will run A/B testing experiments, translate statistical findings into executive dashboards with Tableau or Plotly, and collaborate with product teams to drive data-informed decisions. Strong statistical analysis and SQL background are required.",
+    "required_skills": ["Python", "SQL", "Pandas", "NumPy", "Scikit-Learn", "NLP", "Statistical Analysis", "Git"],
+    "preferred_skills": ["spaCy", "NLTK", "Tableau", "A/B Testing", "Machine Learning", "BigQuery", "Data Analysis"],
+    "min_degree": "Master's or Bachelor's in Statistics, Data Science, Computer Science or Mathematics"
+  },
+  {
+    "id": "jd-da-005",
+    "title": "Business Intelligence & Data Analyst",
+    "department": "Business Intelligence & Strategy",
+    "experience_years": 2,
+    "description": "We are looking for a detail-oriented Data Analyst to turn data into actionable business insight. You will write advanced SQL queries, build automated Power BI and Tableau dashboards, perform cohort analysis, and communicate metrics to leadership. Responsibilities include auditing data pipelines, managing data extraction from Snowflake and PostgreSQL, conducting A/B test analysis, and using Excel and Python for exploratory data analysis. Excellent problem-solving and cross-functional communication are paramount.",
+    "required_skills": ["SQL", "Power BI", "Tableau", "Excel", "Data Analysis", "Communication", "Problem Solving"],
+    "preferred_skills": ["Python", "Pandas", "PostgreSQL", "Snowflake", "A/B Testing", "Statistical Analysis"],
+    "min_degree": "Bachelor's in Business, Analytics, Computer Science, or Economics"
+  },
+  {
+    "id": "jd-be-006",
+    "title": "Senior Python Backend Engineer",
+    "department": "Core Platform Engineering",
+    "experience_years": 4,
+    "description": "Seeking an experienced Python Backend Engineer to architect resilient microservices supporting millions of daily active users. You will write asynchronous backend APIs using FastAPI and Django, design optimized database schemas for PostgreSQL, utilize Redis for low-latency caching, and integrate message streaming with Apache Kafka. You should be fluent in Docker containerization, REST API design, Unit Testing with Pytest, and CI/CD pipelines.",
+    "required_skills": ["Python", "FastAPI", "PostgreSQL", "REST APIs", "Docker", "Git", "Unit Testing", "Microservices"],
+    "preferred_skills": ["Redis", "Apache Kafka", "Django", "AWS", "CI/CD", "System Design", "Linux"],
+    "min_degree": "Bachelor's in Computer Science or Software Engineering"
+  }
+]

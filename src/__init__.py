@@ -1,7 +1,6 @@
 """
-Support Ticket Classification & Prioritization System
-Machine Learning Task 2 (2026) - Future Interns
-Author: nithi-2008
+TalentMatch AI - Machine Learning Resume & Candidate Screening System
+Future Interns Machine Learning Task 3 (2026)
 """
-
-__version__ = "2.0.0"
+__version__ = "1.0.0"
+__author__ = "nithi-2008"

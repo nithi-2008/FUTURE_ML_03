@@ -1,262 +1,189 @@
 """
-Text Preprocessing and Feature Extraction Module
-Support Ticket Classification & Prioritization
+Text Preprocessor Module for Resume and Job Description Processing.
+Includes noise removal, tokenization, lemmatization, and section extraction.
 """
 
 import re
 import string
-import unicodedata
-from typing import List, Optional, Union, Dict, Any
-import numpy as np
-import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
+from typing import Dict, List, Optional
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 
-# NLTK imports with graceful fallback
-try:
-    import nltk
-    from nltk.corpus import stopwords
-    from nltk.stem import WordNetLemmatizer
-    from nltk.tokenize import word_tokenize
-
-    # Ensure required resources exist
+# Ensure essential NLTK resources are available
+for pkg in ["stopwords", "punkt", "punkt_tab", "wordnet", "omw-1.4"]:
     try:
-        STOPWORDS = set(stopwords.words("english"))
-    except LookupError:
-        nltk.download("stopwords", quiet=True)
-        STOPWORDS = set(stopwords.words("english"))
-
-    try:
-        LEMMATIZER = WordNetLemmatizer()
-        _ = LEMMATIZER.lemmatize("tickets")
-    except LookupError:
-        nltk.download("wordnet", quiet=True)
-        nltk.download("punkt", quiet=True)
-        nltk.download("punkt_tab", quiet=True)
-        LEMMATIZER = WordNetLemmatizer()
-
-except Exception:
-    STOPWORDS = {
-        "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are",
-        "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but",
-        "by", "could", "did", "do", "does", "doing", "down", "during", "each", "few", "for", "from",
-        "further", "had", "has", "have", "having", "he", "her", "here", "hers", "herself", "him",
-        "himself", "his", "how", "i", "if", "in", "into", "is", "it", "its", "itself", "just", "me",
-        "more", "most", "my", "myself", "of", "off", "on", "once", "only", "or", "other", "ought",
-        "our", "ours", "ourselves", "out", "over", "own", "same", "she", "should", "so", "some",
-        "such", "than", "that", "the", "their", "theirs", "them", "themselves", "then", "there",
-        "these", "they", "this", "those", "through", "to", "too", "under", "until", "up", "very",
-        "was", "we", "were", "what", "when", "where", "which", "while", "who", "whom", "why", "with",
-        "would", "you", "your", "yours", "yourself", "yourselves"
-    }
-    LEMMATIZER = None
-
-# Critical negation and urgency words that must NOT be removed as stopwords
-PRESERVED_WORDS = {
-    "not", "no", "never", "cannot", "cant", "wont", "without", "against", "down",
-    "fail", "failed", "crash", "bug", "error", "urgent", "broken", "issue", "problem"
-}
-FILTERED_STOPWORDS = STOPWORDS - PRESERVED_WORDS
-
-# Contraction dictionary for normalizing English colloquialisms
-CONTRACTIONS_DICT = {
-    "ain't": "am not", "aren't": "are not", "can't": "cannot", "can't've": "cannot have",
-    "'cause": "because", "could've": "could have", "couldn't": "could not",
-    "didn't": "did not", "doesn't": "does not", "don't": "do not", "hadn't": "had not",
-    "hasn't": "has not", "haven't": "have not", "he'd": "he would", "he'll": "he will",
-    "he's": "he is", "how'd": "how did", "how'll": "how will", "how's": "how is",
-    "i'd": "i would", "i'll": "i will", "i'm": "i am", "i've": "i have",
-    "isn't": "is not", "it'd": "it would", "it'll": "it will", "it's": "it is",
-    "let's": "let us", "might've": "might have", "mightn't": "might not",
-    "must've": "must have", "mustn't": "must not", "shan't": "shall not",
-    "she'd": "she would", "she'll": "she will", "she's": "she is",
-    "should've": "should have", "shouldn't": "should not", "that's": "that is",
-    "there's": "there is", "they'd": "they would", "they'll": "they will",
-    "they're": "they are", "they've": "they have", "wasn't": "was not",
-    "we'd": "we would", "we'll": "we will", "we're": "we are", "we've": "we have",
-    "weren't": "were not", "what'll": "what will", "what're": "what are",
-    "what's": "what is", "what've": "what have", "where's": "where is",
-    "who'll": "who will", "who's": "who is", "won't": "will not",
-    "wouldn't": "would not", "you'd": "you would", "you'll": "you will",
-    "you're": "you are", "you've": "you have"
-}
-
-# Domain urgency keywords indicating high or critical priority
-URGENCY_KEYWORDS = {
-    "urgent", "urgently", "asap", "emergency", "critical", "outage", "down",
-    "crashed", "crashing", "fatal", "broken", "breach", "hacked", "loss",
-    "lost", "refund", "lawsuit", "immediate", "immediately", "deadline",
-    "unusable", "stuck", "cannot login", "locked out", "failed payment",
-    "overcharged", "illegal", "security", "compromised", "exploit", "unauthorized"
-}
+        nltk.download(pkg, quiet=True)
+    except Exception:
+        pass
 
 
-def expand_contractions(text: str) -> str:
-    """Expand standard English contractions into full forms."""
-    if not isinstance(text, str):
-        return ""
-    pattern = re.compile(r'\b(' + '|'.join(re.escape(k) for k in CONTRACTIONS_DICT.keys()) + r')\b', re.IGNORECASE)
-
-    def replace(match):
-        match_str = match.group(0).lower()
-        expanded = CONTRACTIONS_DICT.get(match_str, match_str)
-        # Match case
-        if match.group(0).isupper():
-            return expanded.upper()
-        if match.group(0)[0].isupper():
-            return expanded.capitalize()
-        return expanded
-
-    return pattern.sub(replace, text)
-
-
-def clean_text(
-    text: str,
-    lower: bool = True,
-    remove_urls: bool = True,
-    remove_emails: bool = True,
-    remove_special_chars: bool = True,
-    remove_stops: bool = True,
-    lemmatize: bool = True
-) -> str:
+class TextPreprocessor:
     """
-    Clean and normalize raw customer support ticket text.
-    
-    Steps:
-    1. Unicode normalization and contraction expansion
-    2. Removal of URLs, emails, IP addresses, HTML tags
-    3. Punctuation and digit normalization
-    4. Stopword removal (preserving negation and critical problem tokens)
-    5. WordNet Lemmatization
+    Handles robust cleaning, normalization, tokenization, and sectioning
+    of unstructured resume and job description text.
     """
-    if pd.isna(text) or not isinstance(text, str):
-        return ""
 
-    # Normalize unicode (accents, curly quotes)
-    text = unicodedata.normalize("NFKD", text)
+    def __init__(self):
+        try:
+            self.stop_words = set(stopwords.words("english"))
+        except Exception:
+            self.stop_words = set()
 
-    # Expand contractions
-    text = expand_contractions(text)
+        try:
+            self.lemmatizer = WordNetLemmatizer()
+        except Exception:
+            self.lemmatizer = None
 
-    # Strip HTML tags
-    text = re.sub(r"<[^>]+>", " ", text)
+        # Technical terms that shouldn't be stripped as stopwords
+        self.stop_words.difference_update({"r", "c", "ai", "ml", "nlp", "sql", "aws", "gcp", "git"})
 
-    # Strip URLs and web links
-    if remove_urls:
-        text = re.sub(r"https?://\S+|www\.\S+", " ", text)
+        # Regex patterns for contact data and noise
+        self.email_pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b")
+        self.url_pattern = re.compile(r"https?://\S+|www\.\S+")
+        self.phone_pattern = re.compile(r"(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}")
+        self.bullet_pattern = re.compile(r"[\u2022\u2023\u25E6\u2043\u2219\u25AA\u25AB\u25CF\u25CB\u25BA\u25AA\-\*]")
 
-    # Strip emails
-    if remove_emails:
-        text = re.sub(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", " ", text)
-
-    # Strip IP addresses
-    text = re.sub(r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b", " ", text)
-
-    # Lowercase if requested
-    if lower:
-        text = text.lower()
-
-    # Special characters & extra punctuation
-    if remove_special_chars:
-        # Keep alphanumeric, hyphen, and apostrophe for words
-        text = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
-
-    # Tokenize by whitespace
-    tokens = text.split()
-
-    # Stopword removal
-    if remove_stops:
-        tokens = [t for t in tokens if t not in FILTERED_STOPWORDS and len(t) > 1]
-
-    # Lemmatization
-    if lemmatize and LEMMATIZER is not None:
-        tokens = [LEMMATIZER.lemmatize(t) for t in tokens]
-
-    return " ".join(tokens)
-
-
-def extract_ticket_signals(text: str) -> Dict[str, Any]:
-    """
-    Extract linguistic and behavioral signals useful for priority triage:
-    - Character and word count
-    - Exclamation mark count
-    - Question mark count
-    - Uppercase ratio (shouting / panic metric)
-    - Presence of high-urgency keywords
-    """
-    if not isinstance(text, str) or not text.strip():
-        return {
-            "char_count": 0,
-            "word_count": 0,
-            "avg_word_len": 0.0,
-            "exclamation_count": 0,
-            "question_count": 0,
-            "uppercase_ratio": 0.0,
-            "urgency_score": 0,
-            "has_critical_keyword": False,
+        # Common resume section header keywords
+        self.section_headers = {
+            "skills": re.compile(r"\b(skills|technical skills|technologies|proficiencies|competencies|tech stack)\b", re.IGNORECASE),
+            "experience": re.compile(r"\b(experience|work experience|employment history|work history|professional experience)\b", re.IGNORECASE),
+            "education": re.compile(r"\b(education|academic background|qualifications|academic history|degrees)\b", re.IGNORECASE),
+            "projects": re.compile(r"\b(projects|key projects|academic projects|personal projects)\b", re.IGNORECASE),
+            "certifications": re.compile(r"\b(certifications|certificates|licenses|credentials|accreditations)\b", re.IGNORECASE),
+            "summary": re.compile(r"\b(summary|professional summary|executive summary|about me|profile|objective)\b", re.IGNORECASE)
         }
 
-    raw = text.strip()
-    words = raw.split()
-    total_chars = len(raw)
-    total_words = len(words)
+    def clean_text(self, text: str, preserve_case: bool = False) -> str:
+        """
+        Cleans raw unstructured text:
+        - Removes URLs, emails, phone numbers, bullets, and excessive spaces.
+        - Preserves important compound tokens like C++, C#, .NET, Node.js.
+        """
+        if not text or not isinstance(text, str):
+            return ""
 
-    # Uppercase chars (excluding spaces)
-    non_space_chars = [c for c in raw if not c.isspace()]
-    upper_count = sum(1 for c in non_space_chars if c.isupper())
-    upper_ratio = (upper_count / len(non_space_chars)) if non_space_chars else 0.0
+        # Remove URLs, emails, phone numbers
+        text = self.url_pattern.sub(" ", text)
+        text = self.email_pattern.sub(" ", text)
+        text = self.phone_pattern.sub(" ", text)
 
-    exclamation_count = raw.count("!")
-    question_count = raw.count("?")
+        # Replace bullet points with whitespace
+        text = self.bullet_pattern.sub(" ", text)
 
-    lower_text = raw.lower()
-    matched_urgency = [w for w in URGENCY_KEYWORDS if re.search(r'\b' + re.escape(w) + r'\b', lower_text)]
-    urgency_score = len(matched_urgency)
+        # Protect special language names before removing general punctuation
+        replacements = {
+            r"\b[cC]\+\+": "__CPP__",
+            r"\b[cC]#": "__CSHARP__",
+            r"\.net\b": "__DOTNET__",
+            r"\bnode\.js\b": "__NODEJS__",
+            r"\breact\.js\b": "__REACTJS__",
+            r"\bvue\.js\b": "__VUEJS__",
+            r"\bci/cd\b": "__CICD__",
+            r"\ba/b testing\b": "__ABTESTING__",
+            r"\bpl/sql\b": "__PLSQL__"
+        }
 
-    return {
-        "char_count": total_chars,
-        "word_count": total_words,
-        "avg_word_len": round(total_chars / max(1, total_words), 2),
-        "exclamation_count": exclamation_count,
-        "question_count": question_count,
-        "uppercase_ratio": round(upper_ratio, 3),
-        "urgency_score": urgency_score,
-        "has_critical_keyword": urgency_score > 0,
-        "urgency_keywords_found": matched_urgency
-    }
+        for pattern, token in replacements.items():
+            text = re.sub(pattern, token, text, flags=re.IGNORECASE)
+
+        # Remove other special symbols except alphanumeric, whitespace, and periods/hyphens between words
+        text = re.sub(r"[^\w\s\.\-]", " ", text)
+
+        # Restore protected tokens
+        restore_map = {
+            "__CPP__": "C++",
+            "__CSHARP__": "C#",
+            "__DOTNET__": ".NET",
+            "__NODEJS__": "Node.js",
+            "__REACTJS__": "React.js",
+            "__VUEJS__": "Vue.js",
+            "__CICD__": "CI/CD",
+            "__ABTESTING__": "A/B Testing",
+            "__PLSQL__": "PL/SQL"
+        }
+        for token, original in restore_map.items():
+            text = text.replace(token, original)
+
+        # Normalize whitespace
+        text = re.sub(r"\s+", " ", text).strip()
+
+        if not preserve_case:
+            return text.lower()
+        return text
+
+    def tokenize_and_lemmatize(self, text: str, remove_stop: bool = True) -> List[str]:
+        """
+        Tokenizes text, strips stopwords, and lemmatizes words.
+        """
+        cleaned = self.clean_text(text, preserve_case=False)
+        if not cleaned:
+            return []
+
+        try:
+            tokens = word_tokenize(cleaned)
+        except Exception:
+            tokens = cleaned.split()
+
+        processed_tokens = []
+        for token in tokens:
+            # Strip punctuation
+            token = token.strip(string.punctuation)
+            if not token or len(token) < 2 and token not in {"r", "c"}:
+                continue
+
+            if remove_stop and token in self.stop_words:
+                continue
+
+            if self.lemmatizer:
+                try:
+                    lemma = self.lemmatizer.lemmatize(token)
+                except Exception:
+                    lemma = token
+            else:
+                lemma = token
+
+            processed_tokens.append(lemma)
+
+        return processed_tokens
+
+    def extract_sections(self, text: str) -> Dict[str, str]:
+        """
+        Segments resume text into standard sections based on heading heuristics.
+        Returns a dict of section_name -> section_content.
+        """
+        if not text:
+            return {}
+
+        lines = [line.strip() for line in text.split("\n") if line.strip()]
+        sections: Dict[str, List[str]] = {
+            "summary": [],
+            "skills": [],
+            "experience": [],
+            "education": [],
+            "projects": [],
+            "certifications": [],
+            "other": []
+        }
+
+        current_section = "other"
+
+        for line in lines:
+            line_matched = False
+            # Check if this line is a section header (short line with header match)
+            if len(line.split()) <= 4:
+                for section_name, pattern in self.section_headers.items():
+                    if pattern.search(line):
+                        current_section = section_name
+                        line_matched = True
+                        break
+
+            if not line_matched:
+                sections[current_section].append(line)
+
+        return {k: " ".join(v) for k, v in sections.items() if v}
 
 
-class TextCleanerTransformer(BaseEstimator, TransformerMixin):
-    """
-    Scikit-learn compatible transformer that applies clean_text over an iterable.
-    """
-    def __init__(
-        self,
-        lower: bool = True,
-        remove_urls: bool = True,
-        remove_emails: bool = True,
-        remove_special_chars: bool = True,
-        remove_stops: bool = True,
-        lemmatize: bool = True
-    ):
-        self.lower = lower
-        self.remove_urls = remove_urls
-        self.remove_emails = remove_emails
-        self.remove_special_chars = remove_special_chars
-        self.remove_stops = remove_stops
-        self.lemmatize = lemmatize
-
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X) -> List[str]:
-        if isinstance(X, pd.Series):
-            return [clean_text(str(val), self.lower, self.remove_urls, self.remove_emails,
-                               self.remove_special_chars, self.remove_stops, self.lemmatize)
-                    for val in X]
-        elif isinstance(X, (list, np.ndarray)):
-            return [clean_text(str(val), self.lower, self.remove_urls, self.remove_emails,
-                               self.remove_special_chars, self.remove_stops, self.lemmatize)
-                    for val in X]
-        else:
-            return [clean_text(str(X), self.lower, self.remove_urls, self.remove_emails,
-                               self.remove_special_chars, self.remove_stops, self.lemmatize)]
+# Module level singleton for convenience
+preprocessor = TextPreprocessor()

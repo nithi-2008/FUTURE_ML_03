@@ -1,0 +1,280 @@
+"""
+Generate resume_screening_system.ipynb with complete step-by-step documentation.
+"""
+
+import json
+import os
+
+
+def create_notebook():
+    nb = {
+        "cells": [
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "# 💼 Machine Learning Task 3 (2026): Resume & Candidate Screening System\n",
+                    "### **Future Interns Internship Program**\n",
+                    "**Author**: nithi-2008  \n",
+                    "**Repository**: [https://github.com/nithi-2008/FUTURE_ML_03.git](https://github.com/nithi-2008/FUTURE_ML_03.git)  \n",
+                    "\n",
+                    "---\n",
+                    "\n",
+                    "## 📌 1. Project Background & Objective\n",
+                    "Hiring managers receive hundreds of resumes for a single job opening. Manually screening resumes is slow, inconsistent, and prone to recruiter fatigue.\n",
+                    "\n",
+                    "In this project, we design an intelligent **Decision-Support Natural Language Processing (NLP) system** that:\n",
+                    "1. Parses and extracts text from unstructured resumes (PDF, DOCX, TXT).\n",
+                    "2. Preprocesses text (cleaning, stopword removal, lemmatization, section extraction).\n",
+                    "3. Extracts domain skills and technical proficiencies using **spaCy** phrase matching and taxonomy-based canonical mapping.\n",
+                    "4. Compares candidates against target Job Descriptions using a hybrid scoring model (TF-IDF Cosine Similarity + Weighted Skill Matching + Experience Alignment).\n",
+                    "5. Ranks candidates and assigns actionable tiers (`Highly Recommended`, `Potential Fit`, `Low Fit`).\n",
+                    "6. Pinpoints exact skill gaps and formulates tailored interview screening questions for HR managers."
+                ]
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 🛠️ 2. Environment Setup & Library Imports"
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "import os\n",
+                    "import sys\n",
+                    "import json\n",
+                    "import pandas as pd\n",
+                    "import numpy as np\n",
+                    "import matplotlib.pyplot as plt\n",
+                    "import seaborn as sns\n",
+                    "\n",
+                    "# NLP & ML libraries\n",
+                    "import spacy\n",
+                    "import nltk\n",
+                    "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+                    "from sklearn.metrics.pairwise import cosine_similarity\n",
+                    "\n",
+                    "# Append source directory\n",
+                    "sys.path.insert(0, os.path.abspath('..'))\n",
+                    "\n",
+                    "from src.text_preprocessor import TextPreprocessor\n",
+                    "from src.skill_extractor import SkillExtractor\n",
+                    "from src.matcher import ResumeMatcher\n",
+                    "from src.ranker import CandidateRanker\n",
+                    "from src.explainer import ScreeningExplainer\n",
+                    "from src.document_reader import DocumentReader\n",
+                    "\n",
+                    "print(\"✅ All modules loaded successfully!\")"
+                ]
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 📊 3. Exploratory Data Analysis (EDA) on Candidate Pool\n",
+                    "We inspect the distribution of candidates across diverse engineering and data domains."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "data_path = os.path.join('..', 'data', 'resumes_dataset.csv')\n",
+                    "df = pd.read_csv(data_path)\n",
+                    "print(f\"Total resumes loaded: {len(df)}\")\n",
+                    "print(f\"Columns: {list(df.columns)}\")\n",
+                    "df.head(3)"
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "plt.figure(figsize=(10, 4))\n",
+                    "sns.countplot(data=df, y='primary_category', palette='viridis')\n",
+                    "plt.title('Candidate Distribution by Domain Category')\n",
+                    "plt.xlabel('Number of Resumes')\n",
+                    "plt.ylabel('Domain')\n",
+                    "plt.show()"
+                ]
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 🧹 4. Text Preprocessing & Cleaning Pipeline\n",
+                    "Demonstrating noise removal, regex preservation of technical tokens (e.g., C++, .NET, CI/CD), and lemmatization."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "preprocessor = TextPreprocessor()\n",
+                    "sample_raw = df.iloc[0]['resume_text'][:400]\n",
+                    "print(\"--- RAW RESUME SNIPPET ---\")\n",
+                    "print(sample_raw)\n",
+                    "\n",
+                    "cleaned = preprocessor.clean_text(sample_raw)\n",
+                    "print(\"\\n--- CLEANED TEXT ---\")\n",
+                    "print(cleaned)\n",
+                    "\n",
+                    "tokens = preprocessor.tokenize_and_lemmatize(sample_raw)\n",
+                    "print(\"\\n--- LEMMATIZED TOKENS (Sample 15) ---\")\n",
+                    "print(tokens[:15])"
+                ]
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 🧠 5. NLP Skill Extraction (spaCy + Taxonomy)\n",
+                    "We extract canonical skills and group them into domains (Cloud, AI/ML, Languages, Databases)."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "extractor = SkillExtractor()\n",
+                    "extracted = extractor.extract_skills(df.iloc[0]['resume_text'])\n",
+                    "print(f\"Extracted {extracted['total_skills_count']} Unique Skills:\")\n",
+                    "print(extracted['found_skills'])\n",
+                    "\n",
+                    "print(\"\\nSkills Grouped by Domain:\")\n",
+                    "for cat, sks in extracted['skills_by_category'].items():\n",
+                    "    print(f\"  • {cat}: {', '.join(sks)}\")"
+                ]
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 🎯 6. Target Job Description Loading & Parsing\n",
+                    "Loading the target Senior Machine Learning Engineer benchmark role."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "with open(os.path.join('..', 'data', 'job_descriptions.json'), 'r') as f:\n",
+                    "    jds = json.load(f)\n",
+                    "\n",
+                    "target_jd = jds[0]  # Senior Machine Learning Engineer\n",
+                    "print(f\"Target Role: {target_jd['title']}\")\n",
+                    "print(f\"Required Experience: {target_jd['experience_years']} Years\")\n",
+                    "print(f\"Required Skills: {target_jd['required_skills']}\")\n",
+                    "print(f\"Preferred Skills: {target_jd['preferred_skills']}\")"
+                ]
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## ⚙️ 7. Similarity & Hybrid Role Fit Scoring\n",
+                    "Mathematical formula combining:\n",
+                    "$$\\text{Composite Fit} = (w_{\\text{skill}} \\cdot \\text{Skill Match}) + (w_{\\text{semantic}} \\cdot \\text{TF-IDF Cosine Sim}) + (w_{\\text{exp}} \\cdot \\text{Experience Fit})$$"
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "matcher = ResumeMatcher(skill_weight=0.50, semantic_weight=0.35, experience_weight=0.15)\n",
+                    "\n",
+                    "# Screen first 10 candidates\n",
+                    "results = []\n",
+                    "for idx, row in df.iloc[:10].iterrows():\n",
+                    "    res = matcher.match_resume(row['resume_text'], target_jd, filename=f\"{row['candidate_name']}.txt\")\n",
+                    "    results.append(res)\n",
+                    "\n",
+                    "ranker = CandidateRanker()\n",
+                    "ranked_candidates = ranker.rank_candidates(results)\n",
+                    "\n",
+                    "ranked_df = pd.DataFrame(ranked_candidates)[['rank', 'candidate_name', 'composite_score', 'skill_score', 'semantic_score', 'tier', 'verdict']]\n",
+                    "ranked_df"
+                ]
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 🔍 8. Explainable AI (XAI) & Skill Gap Analysis\n",
+                    "Drilling down into the #1 ranked candidate vs candidates with skill gaps."
+                ]
+            },
+            {
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [
+                    "explainer = ScreeningExplainer()\n",
+                    "top_cand = ranked_candidates[0]\n",
+                    "print(explainer.generate_recruiter_report(top_cand))\n",
+                    "\n",
+                    "print(\"\\n--- Suggested Interview Questions ---\")\n",
+                    "questions = explainer.generate_interview_questions(top_cand)\n",
+                    "for q in questions:\n",
+                    "    print(f\"• [{q['type']}] {q['question']}\")"
+                ]
+            },
+            {
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [
+                    "## 📈 9. Conclusions & Next Steps\n",
+                    "- The hybrid scoring architecture successfully prevents false positives caused by generic keyword stuffing.\n",
+                    "- spaCy phrase matching with canonical mapping ensures accurate identification of synonyms (e.g. K8s = Kubernetes, Sklearn = Scikit-Learn).\n",
+                    "- The explainable decision framework gives non-technical recruiters clear, justified recommendations."
+                ]
+            }
+        ],
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python 3",
+                "language": "python",
+                "name": "python3"
+            },
+            "language_info": {
+                "codemirror_mode": {"name": "ipython", "version": 3},
+                "file_extension": ".py",
+                "mimetype": "text/x-python",
+                "name": "python",
+                "nbformat": 4,
+                "nbformat_minor": 4,
+                "version": "3.13.0"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 4
+    }
+
+    nb_path = os.path.join("notebooks", "resume_screening_system.ipynb")
+    os.makedirs(os.path.dirname(nb_path), exist_ok=True)
+    with open(nb_path, "w", encoding="utf-8") as f:
+        json.dump(nb, f, indent=2)
+
+    print(f"[OK] Generated notebook at {nb_path}")
+
+
+if __name__ == "__main__":
+    create_notebook()

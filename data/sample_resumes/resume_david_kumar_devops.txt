@@ -1,0 +1,25 @@
+David Kumar
+Site Reliability Engineer (SRE)
+Contact: david.kumar@email.com | Phone: +1 (502) 228-8317
+Location: San Francisco, CA | LinkedIn: linkedin.com/in/david.kumar
+
+SUMMARY
+Cloud Systems Architect specializing in AWS enterprise cloud migrations and GitOps automation. Authored declarative Terraform modules for VPC, EKS, RDS, and CloudFront. Automated container image vulnerability scanning and deployments using Docker and GitHub Actions. Monitored cluster telemetry with Prometheus and Grafana. Experienced professional with 6.2 years of demonstrated success across engineering and analytics environments.
+
+TECHNICAL SKILLS
+Technical Proficiencies: AWS, Docker, Kubernetes, Linux, Terraform, CI/CD, GitHub Actions, Bash, Git, Prometheus, Grafana, System Design, Azure, Python, Nginx
+Core Competencies: Software Architecture, Clean Code, Agile Sprints, System Reliability
+
+PROFESSIONAL EXPERIENCE
+Site Reliability Engineer (SRE) | Tech Enterprise Corp (2022 - Present)
+- Engineered scalable systems and production-grade architectures utilizing AWS, Docker, Kubernetes, Linux.
+- Optimized performance, reduced latency by 35%, and spearheaded cross-functional delivery with product teams.
+- Collaborated using Git version control and conducted peer code reviews in Agile sprint cycles.
+
+Associate Specialist | Digital Innovations LLC (2019 - 2022)
+- Implemented core features and data pipelines utilizing Kubernetes, Linux, Terraform, CI/CD.
+- Partnered with senior leadership to define technical roadmaps and automated deployment workflows.
+
+EDUCATION
+Master's Degree in Computer Science / Engineering
+University of Washington (Graduated with Honors)

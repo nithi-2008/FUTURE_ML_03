@@ -1,0 +1,25 @@
+Emily Zhang
+Full Stack Engineer
+Contact: emily.zhang@email.com | Phone: +1 (819) 478-2713
+Location: San Francisco, CA | LinkedIn: linkedin.com/in/emily.zhang
+
+SUMMARY
+Versatile Software Engineer with strong front-end and back-end proficiencies. Designed interactive client portals using React, Redux, and HTML5/CSS3. Engineered backend microservices using Node.js, Express.js, and REST APIs backed by MongoDB and Redis caching. Adept at CI/CD workflows with GitHub Actions. Experienced professional with 5.3 years of demonstrated success across engineering and analytics environments.
+
+TECHNICAL SKILLS
+Technical Proficiencies: JavaScript, TypeScript, React, Node.js, Express.js, PostgreSQL, REST APIs, Git, HTML5, MongoDB, Tailwind CSS, Unit Testing, Agile, CSS3, AWS, GraphQL, Docker, Next.js
+Core Competencies: Software Architecture, Clean Code, Agile Sprints, System Reliability
+
+PROFESSIONAL EXPERIENCE
+Full Stack Engineer | Tech Enterprise Corp (2022 - Present)
+- Engineered scalable systems and production-grade architectures utilizing JavaScript, TypeScript, React, Node.js.
+- Optimized performance, reduced latency by 35%, and spearheaded cross-functional delivery with product teams.
+- Collaborated using Git version control and conducted peer code reviews in Agile sprint cycles.
+
+Associate Specialist | Digital Innovations LLC (2019 - 2022)
+- Implemented core features and data pipelines utilizing React, Node.js, Express.js, PostgreSQL.
+- Partnered with senior leadership to define technical roadmaps and automated deployment workflows.
+
+EDUCATION
+Master's Degree in Computer Science / Engineering
+MIT (Graduated with Honors)

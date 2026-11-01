@@ -1,10 +1,12 @@
 @echo off
-TITLE TicketAI - Support Ticket Classification & Prioritization Dashboard
+TITLE TalentMatch AI - Resume & Candidate Screening Dashboard
 echo =====================================================================
-echo  Launching TicketAI - ML Task 2 (2026) Support Desk Platform
+echo  Launching TalentMatch AI - Machine Learning Task 3 (2026)
+echo  Resume / Candidate Screening & Decision-Support System
 echo  Future Interns Internship Program ^| Developed by nithi-2008
+echo  Repository: https://github.com/nithi-2008/FUTURE_ML_03.git
 echo =====================================================================
 echo.
-echo Launching Streamlit dashboard on port 8503...
-py -m streamlit run app.py --server.port 8503 --server.headless false
+echo Launching Streamlit web dashboard on port 8501...
+py -m streamlit run app.py --server.port 8501 --server.headless false
 pause

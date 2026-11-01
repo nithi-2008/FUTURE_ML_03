@@ -1,0 +1,25 @@
+Jordan Lee
+Junior Software Developer
+Contact: jordan.lee@email.com | Phone: +1 (673) 346-1122
+Location: San Francisco, CA | LinkedIn: linkedin.com/in/jordan.lee
+
+SUMMARY
+Recent Computer Science graduate with solid foundational coursework in data structures, algorithms, and software engineering. Proficient in Python and JavaScript, with hands-on academic projects building simple web apps using Flask, HTML5, and CSS3. Familiar with Git version control, basic SQL queries, and object-oriented programming. Eager to learn modern frameworks and contribute to a fast-paced development team. Experienced professional with 0.3 years of demonstrated success across engineering and analytics environments.
+
+TECHNICAL SKILLS
+Technical Proficiencies: Python, JavaScript, HTML5, CSS3, Git, Communication, SQL, Problem Solving
+Core Competencies: Software Architecture, Clean Code, Agile Sprints, System Reliability
+
+PROFESSIONAL EXPERIENCE
+Junior Software Developer | Tech Enterprise Corp (2022 - Present)
+- Engineered scalable systems and production-grade architectures utilizing Python, JavaScript, HTML5, CSS3.
+- Optimized performance, reduced latency by 35%, and spearheaded cross-functional delivery with product teams.
+- Collaborated using Git version control and conducted peer code reviews in Agile sprint cycles.
+
+Associate Specialist | Digital Innovations LLC (2019 - 2022)
+- Implemented core features and data pipelines utilizing HTML5, CSS3, Git, Communication.
+- Partnered with senior leadership to define technical roadmaps and automated deployment workflows.
+
+EDUCATION
+Bachelor's Degree in Computer Science / Engineering
+Columbia University (Graduated with Honors)

@@ -1,0 +1,25 @@
+Marcus Brooks
+Operations Analytics Specialist
+Contact: marcus.brooks@email.com | Phone: +1 (927) 548-9889
+Location: San Francisco, CA | LinkedIn: linkedin.com/in/marcus.brooks
+
+SUMMARY
+Data and Business Intelligence Analyst experienced in translating raw transactional data into executive decision dashboards. Expert in writing complex SQL queries, window functions, and CTEs across PostgreSQL and Snowflake warehouses. Designed automated interactive reporting suites in Power BI and Tableau. Proficient in advanced Excel financial modeling and basic Python exploratory analysis with Pandas. Excellent stakeholder communication and presentation skills. Experienced professional with 2.6 years of demonstrated success across engineering and analytics environments.
+
+TECHNICAL SKILLS
+Technical Proficiencies: SQL, Power BI, Tableau, Excel, Data Analysis, Communication, Problem Solving, Python, Snowflake, Statistical Analysis
+Core Competencies: Software Architecture, Clean Code, Agile Sprints, System Reliability
+
+PROFESSIONAL EXPERIENCE
+Operations Analytics Specialist | Tech Enterprise Corp (2022 - Present)
+- Engineered scalable systems and production-grade architectures utilizing SQL, Power BI, Tableau, Excel.
+- Optimized performance, reduced latency by 35%, and spearheaded cross-functional delivery with product teams.
+- Collaborated using Git version control and conducted peer code reviews in Agile sprint cycles.
+
+Associate Specialist | Digital Innovations LLC (2019 - 2022)
+- Implemented core features and data pipelines utilizing Tableau, Excel, Data Analysis, Communication.
+- Partnered with senior leadership to define technical roadmaps and automated deployment workflows.
+
+EDUCATION
+Master's Degree in Computer Science / Engineering
+University of Washington (Graduated with Honors)
