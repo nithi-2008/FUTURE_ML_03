@@ -7,6 +7,6 @@ echo  Future Interns Internship Program ^| Developed by nithi-2008
 echo  Repository: https://github.com/nithi-2008/FUTURE_ML_03.git
 echo =====================================================================
 echo.
-echo Launching Streamlit web dashboard on port 8501...
-py -m streamlit run app.py --server.port 8501 --server.headless false
+echo Launching Streamlit web dashboard on port 8505...
+py -m streamlit run app.py --server.port 8505 --server.headless false
 pause
